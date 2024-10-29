@@ -1,0 +1,73 @@
+import java.io.*;
+import java.util.*;
+
+public class WordSearch {
+    public static void main(String[] args) {
+        try {
+            List<String> words = readWordsFromFile("input.txt");
+            Collections.sort(words);
+
+            String[] wordsArray = words.toArray(new String[0]);
+
+            HashMap<String, Integer> wordCount = new HashMap<>();
+            for (String word : wordsArray) {
+                if (wordCount.containsKey(word)) {
+                    int count = wordCount.get(word);
+                    wordCount.put(word, count + 1);
+                } else {
+                    wordCount.put(word, 1);
+                }
+            }
+
+            Scanner scanner = new Scanner(System.in);
+            System.out.print("Enter a word to search: ");
+            String word = scanner.nextLine().toLowerCase();
+
+            int index = binarySearch(wordsArray, word);
+            if (index >= 0) {
+                System.out.println("Word found. It appears " + wordCount.get(word) + " times.");
+            } else {
+                System.out.println("Word not found.");
+            }
+
+            scanner.close();
+        } catch (IOException e) {
+            System.out.println("Can't access file.");
+        }
+    }
+
+    public static List<String> readWordsFromFile(String fileName) throws IOException {
+        List<String> words = new ArrayList<>();
+        BufferedReader readFile = new BufferedReader(new FileReader(fileName));
+        String line = readFile.readLine();
+
+        while (line != null) {
+            String[] wordArray = line.split(" ");
+            for (String word : wordArray) {
+                if (!word.isEmpty()) {
+                    words.add(word.toLowerCase());
+                }
+            }
+            line = readFile.readLine();
+        }
+
+        readFile.close();
+        return words;
+    }
+
+    public static int binarySearch(String[] array, String target) {
+        int left = 0, right = array.length - 1;
+        while (left <= right) {
+            int mid = left + (right - left) / 2;
+            int result = target.compareTo(array[mid]);
+            if (result == 0) {
+                return mid;
+            } else if (result > 0) {
+                left = mid + 1;
+            } else {
+                right = mid - 1;
+            }
+        }
+        return -1;
+    }
+}
